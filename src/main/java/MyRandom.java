@@ -1,10 +1,17 @@
 import java.util.Random;
 
 public class MyRandom {
-    double min = 00.0000;
-    double max = 99.9999;
-    int low = 0;
-    int high = 10000;
+    double min = 85;
+    double max = 95;
+
+    private int countLow = 0;
+    private int countHigh = 0;
+
+    private double bet;
+    private int rollWin;
+    private int countJACKPOTS = 0;
+
+    private int attempt = 0;
 
     public static void main (String[] arg) {
         MyRandom random = new MyRandom();
@@ -12,38 +19,111 @@ public class MyRandom {
     }
 
     private void init() {
-        Random r = new Random();
-
-        double chance;
-        int countLow = 0;
-        int countHigh = 0;
-        int countJACKPOTS = 0;
-
-        System.out.println(fib(3));
-
-        for (int i = 0; i < 1000000000; i++){
-            int randomValue = r.nextInt(high-low) + low;
-
-            if(randomValue < 4750) {
-                countHigh = 0;
-                countLow++;
-                if (countLow > 28){
-                    chance = (1 - (Math.pow(0.525, countLow))) * 100;
-                    //System.out.printf("%3s %5d %10s %1d %4.10f%1s %4s\n", "Number = ", randomValue," SP Dise = ", countLow, chance, "%", "BettLow");
-                }
-            } if (randomValue > 5250) {
-                countLow = 0;
-                countHigh++;
-                if (countHigh > 28) {
-                    chance = (1 - (Math.pow(0.525, countHigh))) * 100;
-                    //System.out.printf("%3s %5d %10s %1d %4.10f%1s %4s\n", "Number = ", randomValue," SP Dise = ", countHigh, chance, "%",  "BettHigh" );
-                }
-            } if (randomValue <= 5250 && randomValue >= 4700) {
-                countHigh = 0;
-                countLow = 0;
-            }
-            countJACKPOTS = getCountJACKPOTS(countJACKPOTS, randomValue);
+        while (attempt >= 0) {
+            attempt++;
+            //rollOnMargingeil();
+            combinedTactik();
         }
+        //combinedTactik();
+    }
+
+    private void combinedTactik() {
+        double balance = 300;
+        int tick = 0;
+        bet = 100;
+        double startBet = bet;
+        double procent;
+
+        while(balance >= bet){
+            tick++;
+            double temp = 0;
+
+            procent = (Math.random() * (max - min) + min);
+
+            if(dise() < (10000 * (procent / 100))) {
+                balance  += (bet / (procent / 100) - bet);
+                bet = startBet;
+            } else {
+                balance -= bet;
+                for (int i = 1; temp < startBet; i++) {
+                    bet = startBet;
+                    bet *= i;
+                    temp = (bet / (procent / 100) - bet);
+                }
+                bet = temp;
+            }
+
+           // System.out.println(tick + "\t" + balance);
+
+            if(balance >= 1000000) {
+                System.out.println(attempt);
+                attempt = -1;
+                return;
+            }
+        }
+    }
+
+    private void rollOnMargingeil() {
+        double balance = 750;
+        int tick = 0;
+        bet = 1;
+
+        while (balance >= bet) {
+            tick++;
+
+            if (dise() <= 4749) {
+                balance += bet;
+                bet = 1;
+            } else {
+                balance -= bet;
+                bet *= 2;
+            }
+            System.out.println(tick + "\t" + balance);
+
+            if(balance >= 1000) {
+                System.out.println(attempt);
+                attempt = -1;
+                return;
+            }
+        }
+    }
+
+    private int dise() {
+        int randomValue;
+        int low = 0;
+        int high = 10000;
+
+        Random r = new Random();
+        randomValue = r.nextInt(high - low) + low;
+
+        return randomValue;
+    }
+
+    int fib(int i) {
+        if (i == 1) return 1;
+        if (i == 2) return 1;
+        return fib(i - 1) + fib(i - 2);
+    }
+
+    private void roll(int randomValue) {
+        double chance;
+
+        if(randomValue < 4750) {
+            countHigh = 0;
+            countLow++;
+            if (countLow > 28){
+                chance = (1 - (Math.pow(0.525, countLow))) * 100;
+                //System.out.printf("%3s %5d %10s %1d %4.10f%1s %4s\n", "Number = ", randomValue," SP Dise = ", countLow, chance, "%", "BettLow");
+            }
+        } if (randomValue > 5250) {
+            countLow = 0;
+            countHigh++;
+            if (countHigh > 28) {
+                chance = (1 - (Math.pow(0.525, countHigh))) * 100;
+                //System.out.printf("%3s %5d %10s %1d %4.10f%1s %4s\n", "Number = ", randomValue," SP Dise = ", countHigh, chance, "%",  "BettHigh" );
+            }
+        }
+        //countJACKPOTS = getCountJACKPOTS(countJACKPOTS, randomValue);
     }
 
     private int getCountJACKPOTS(int countJACKPOTS, int randomValue) {
@@ -60,10 +140,5 @@ public class MyRandom {
         }
         return countJACKPOTS;
     }
-
-    int fib(int i) {
-        if (i == 1) return 1;
-        if (i == 2) return 1;
-        return fib(i - 1) + fib(i - 2);
-    }
 }
+
