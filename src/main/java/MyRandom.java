@@ -32,35 +32,52 @@ public class MyRandom {
         int tick = 0;
         bet = 100;
         double startBet = bet;
-        double procent;
+        double percent;
+        double betThenLoss = 0;
 
         while(balance >= bet){
             tick++;
-            double temp = 0;
+            double currentBet = 0;
 
-            procent = (Math.random() * (max - min) + min);
+            percent = (Math.random() * (max - min) + min);
 
-            if(dise() < (10000 * (procent / 100))) {
-                balance  += (bet / (procent / 100) - bet);
-                bet = startBet;
+            if (betThenLoss < 0) {
+                bet = getBetThenLoss(startBet, percent, currentBet, balance, betThenLoss);
             } else {
-                balance -= bet;
-                for (int i = 1; temp < startBet; i++) {
-                    bet = startBet;
-                    bet *= i;
-                    temp = (bet / (procent / 100) - bet);
-                }
-                bet = temp;
+                bet = startBet;
+                betThenLoss = 0;
             }
 
-           // System.out.println(tick + "\t" + balance);
-
+            if(dise() < (10000 * (percent / 100))) {
+                balance  += (bet / (percent / 100) - bet);
+                betThenLoss += (bet / (percent / 100) - bet);
+            } else {
+                balance -= bet;
+                betThenLoss -= bet;
+            }
+            //System.out.println(tick + "\t" + balance);
             if(balance >= 1000000) {
                 System.out.println(attempt);
                 attempt = -1;
                 return;
             }
         }
+    }
+
+    private double getBetThenLoss(double startBet, double percent, double currentBet, double balance, double betThenLoss) {
+        betThenLoss = Math.abs(betThenLoss);
+        for (int i = 1; currentBet < betThenLoss; i++) {
+            bet = startBet;
+            bet *= i;
+            currentBet = (bet / (percent / 100) - bet);
+        }
+        while (bet > balance){
+            bet /= 2;
+            if (bet <= startBet) {
+                bet = startBet;
+            }
+        }
+        return bet;
     }
 
     private void rollOnMargingeil() {
@@ -105,7 +122,7 @@ public class MyRandom {
         return fib(i - 1) + fib(i - 2);
     }
 
-    private void roll(int randomValue) {
+    private void cheakRoll(int randomValue) {
         double chance;
 
         if(randomValue < 4750) {
@@ -141,4 +158,3 @@ public class MyRandom {
         return countJACKPOTS;
     }
 }
-
