@@ -1,10 +1,8 @@
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Random;
 
 public class MyRandom {
-    double min = 85;
-    double max = 95;
+    private double min = 85;
+    private double max = 95;
 
     private int countLow = 0;
     private int countHigh = 0;
@@ -14,8 +12,8 @@ public class MyRandom {
     private int countJACKPOTS = 0;
 
     private int attempt = 0;
-
-    List<Number> list = new ArrayList<>();
+    private double betThenLoss;
+    double balance;
 
     public static void main (String[] arg) {
         MyRandom random = new MyRandom();
@@ -29,30 +27,30 @@ public class MyRandom {
             combinedTactik();
         }
         //combinedTactik();
-
         //day();
     }
 
     private void day() {
         int day = 0;
-        double balance = 115;
+        double balance = 10838;
 
-        while (balance < 1000000){
+        while (balance < 100000){
             day++;
-            balance += (balance * 4) /100;
+            balance += (balance * 25) /100;
             System.out.println(balance +"\t" + day);
         }
 
     }
 
     private void combinedTactik() {
-        double balance = 750;
+        balance = 750;
         int tick = 0;
         bet = 100;
         double startBet = bet;
         double percent;
-        double betThenLoss = 0;
         int curentRoll;
+
+        betThenLoss = 0;
 
         while(balance >= bet){
             tick++;
@@ -62,42 +60,33 @@ public class MyRandom {
             percent = (Math.random() * (max - min) + min);
 
             //Up bet If lose
-            if (betThenLoss < 0) {
-                bet = getBetThenLoss(startBet, percent, currentBet, balance, betThenLoss);
-            } else {
-                bet = startBet;
-                betThenLoss = 0;
-            }
+            upBetIfLose(balance, startBet, percent, currentBet);
 
             //Set Random at "Low" or "High" on bet
             curentRoll = dise();
-            if (Math.random() < 0.5) {
-                if(curentRoll < (10000 * (percent / 100))) {
-                    balance  += (bet / (percent / 100) - bet);
-                    betThenLoss += (bet / (percent / 100) - bet);
-                } else {
-                    balance -= bet;
-                    betThenLoss -= bet;
-                }
-            } else {
-                if(curentRoll > (10000 - (10000 * (percent / 100)))) {
-                    balance  += (bet / (percent / 100) - bet);
-                    betThenLoss += (bet / (percent / 100) - bet);
-                } else {
-                    balance -= bet;
-                    betThenLoss -= bet;
-                }
-            }
 
-            //System.out.println(tick + "\t" + balance);
+            cheakRoll(curentRoll);
+
+            balance = randomRoll(balance, percent, curentRoll);
 
             //Exit When balance more
-            if(balance >= 40000) {
+            if(balance >= 40000000) {
                 System.out.println(attempt);
                 attempt = -1;
                 return;
             }
         }
+    }
+
+    private int dise() {
+        int randomValue;
+        int low = 0;
+        int high = 10000;
+
+        Random r = new Random();
+        randomValue = r.nextInt(high - low) + low;
+
+        return randomValue;
     }
 
     private double getBetThenLoss(double startBet, double percent, double currentBet, double balance, double betThenLoss) {
@@ -108,7 +97,7 @@ public class MyRandom {
             currentBet = (bet / (percent / 100) - bet);
         }
         while (bet > balance){
-            bet /= 2;
+            bet /= 4;
             if (bet <= startBet) {
                 bet = startBet;
             }
@@ -116,8 +105,82 @@ public class MyRandom {
         return bet;
     }
 
+    //Random Swith on 85-89% to win
+    private double randomRoll(double balance, double percent, int curentRoll) {
+        if (Math.random() < 0.5) {
+            if(curentRoll < (10000 * (percent / 100))) {
+                balance  += (bet / (percent / 100) - bet);
+                betThenLoss += (bet / (percent / 100) - bet);
+            } else {
+                balance -= bet;
+                betThenLoss -= bet;
+            }
+        } else {
+            if(curentRoll > (10000 - (10000 * (percent / 100)))) {
+                balance  += (bet / (percent / 100) - bet);
+                betThenLoss += (bet / (percent / 100) - bet);
+            } else {
+                balance -= bet;
+                betThenLoss -= bet;
+            }
+        }
+        return balance;
+    }
+
+    private void upBetIfLose(double balance, double startBet, double percent, double currentBet) {
+        if (betThenLoss < 0) {
+            bet = getBetThenLoss(startBet, percent, currentBet, balance, betThenLoss);
+        } else {
+            bet = startBet;
+            betThenLoss = 0;
+        }
+    }
+
+    private void cheakRoll(int randomValue) {
+        /*double chance;
+        double bet = 0;
+
+        if(randomValue < 4950) {
+            countHigh = 0;
+            countLow++;
+            if (countLow > 8) {
+                bet = balance / 10;
+            }
+        } if (randomValue > 5050) {
+            countLow = 0;
+            countHigh++;
+            if (countHigh > 8) {
+                chance = (1 - (Math.pow(0.525, countHigh))) * 100;
+                //System.out.printf("%3s %5d %10s %1d %4.10f%1s %4s\n", "Number = ", randomValue," SP Dise = ", countHigh, chance, "%",  "BettHigh" );
+            }
+        }*/
+
+        if (randomValue > 5050) {
+            countHigh++;
+            if (countHigh > 10) {
+                System.out.println("yea!!!");
+            }
+        } else {
+            countHigh = 0;
+        }
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    //Old Function
     private void rollOnMargingeil() {
-        double balance = 750;
+        balance = 750;
         int tick = 0;
         bet = 1;
 
@@ -141,44 +204,10 @@ public class MyRandom {
         }
     }
 
-    private int dise() {
-        int randomValue;
-        int low = 0;
-        int high = 10000;
-
-        Random r = new Random();
-        randomValue = r.nextInt(high - low) + low;
-
-        return randomValue;
-    }
-
     int fib(int i) {
         if (i == 1) return 1;
         if (i == 2) return 1;
         return fib(i - 1) + fib(i - 2);
-    }
-
-    private void cheakRoll(int randomValue, double balance) {
-        double chance;
-        double bet = 0;
-
-        if(randomValue < 4950) {
-            countHigh = 0;
-            countLow++;
-            if (countLow > 8) {
-                list.add(50.51);
-                bet = balance / 8;
-                list.add(bet);
-            }
-        } if (randomValue > 5050) {
-            countLow = 0;
-            countHigh++;
-            if (countHigh > 8) {
-                chance = (1 - (Math.pow(0.525, countHigh))) * 100;
-                //System.out.printf("%3s %5d %10s %1d %4.10f%1s %4s\n", "Number = ", randomValue," SP Dise = ", countHigh, chance, "%",  "BettHigh" );
-            }
-        }
-        //countJACKPOTS = getCountJACKPOTS(countJACKPOTS, randomValue);
     }
 
     private int getCountJACKPOTS(int countJACKPOTS, int randomValue) {
