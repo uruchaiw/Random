@@ -1,3 +1,5 @@
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 public class MyRandom {
@@ -15,17 +17,34 @@ public class MyRandom {
     private double betThenLoss;
     double balance;
 
+    private boolean flag = false;
+    private int type;
+
+    private List<Number> list = new ArrayList();
+
     public static void main (String[] arg) {
         MyRandom random = new MyRandom();
         random.init();
     }
 
     private void init() {
-        while (attempt >= 0) {
-            attempt++;
-            //rollOnMargingeil();
-            combinedTactik();
+        list.clear();
+        for (int i = 0; i < 100; i++) {
+
+            attempt = 0;
+            while (attempt >= 0) {
+                attempt++;
+                //rollOnMargingeil();
+                combinedTactik();
+            }
         }
+
+        int pro = 0;
+        for (Number aList : list) {
+            pro += (int) aList;
+        }
+        pro /= list.size();
+        System.out.println("Среднее число: " + pro);
         //combinedTactik();
         //day();
     }
@@ -39,16 +58,16 @@ public class MyRandom {
             balance += (balance * 25) /100;
             System.out.println(balance +"\t" + day);
         }
-
     }
 
     private void combinedTactik() {
-        balance = 750;
+        balance = 1.0;
         int tick = 0;
-        bet = 100;
+        bet = (balance / 1000000 ) * 2;
         double startBet = bet;
         double percent;
         int curentRoll;
+
 
         betThenLoss = 0;
 
@@ -60,17 +79,24 @@ public class MyRandom {
             percent = (Math.random() * (max - min) + min);
 
             //Up bet If lose
-            upBetIfLose(balance, startBet, percent, currentBet);
+            if (!flag) {
+                upBetIfLose(balance, startBet, percent, currentBet);
+            }
 
             //Set Random at "Low" or "High" on bet
             curentRoll = dise();
 
-            cheakRoll(curentRoll);
+            if (flag){
+                balance = rollX2(balance, curentRoll);
+            } else {
+                balance = randomRoll(balance, percent, curentRoll);
+            }
 
-            balance = randomRoll(balance, percent, curentRoll);
+            //cheakRoll(curentRoll, startBet);
 
             //Exit When balance more
-            if(balance >= 40000000) {
+            if(balance >= 4) {
+                list.add(attempt);
                 System.out.println(attempt);
                 attempt = -1;
                 return;
@@ -89,8 +115,18 @@ public class MyRandom {
         return randomValue;
     }
 
+    private void upBetIfLose(double balance, double startBet, double percent, double currentBet) {
+        if (betThenLoss < 0) {
+            bet = getBetThenLoss(startBet, percent, currentBet, balance, betThenLoss);
+        } else {
+            bet = startBet;
+            betThenLoss = 0;
+        }
+    }
+
     private double getBetThenLoss(double startBet, double percent, double currentBet, double balance, double betThenLoss) {
         betThenLoss = Math.abs(betThenLoss);
+
         for (int i = 1; currentBet < betThenLoss; i++) {
             bet = startBet;
             bet *= i;
@@ -107,6 +143,7 @@ public class MyRandom {
 
     //Random Swith on 85-89% to win
     private double randomRoll(double balance, double percent, int curentRoll) {
+
         if (Math.random() < 0.5) {
             if(curentRoll < (10000 * (percent / 100))) {
                 balance  += (bet / (percent / 100) - bet);
@@ -127,55 +164,77 @@ public class MyRandom {
         return balance;
     }
 
-    private void upBetIfLose(double balance, double startBet, double percent, double currentBet) {
-        if (betThenLoss < 0) {
-            bet = getBetThenLoss(startBet, percent, currentBet, balance, betThenLoss);
+    private double rollX2(double balance, int curentRoll) {
+
+        if (type == 4950) {
+            if (curentRoll > 5051) {
+                balance += bet;
+                betThenLoss += bet;
+            } else {
+                balance -=  bet;
+                betThenLoss -= bet;
+            }
         } else {
-            bet = startBet;
-            betThenLoss = 0;
+            if (curentRoll < 4949) {
+                balance += bet;
+                betThenLoss += bet;
+            } else {
+                balance -=  bet;
+                betThenLoss -= bet;
+            }
         }
+
+        return balance;
     }
 
-    private void cheakRoll(int randomValue) {
-        /*double chance;
-        double bet = 0;
+    private void cheakRoll(int randomValue, double startBet) {
+        double chance;
+        flag = false;
+        type = 0;
 
         if(randomValue < 4950) {
             countHigh = 0;
             countLow++;
-            if (countLow > 8) {
-                bet = balance / 10;
+            if (countLow > 25) {
+                flag = true;
+                type = 4950;
+                setBetOnChanceX2(startBet);
             }
         } if (randomValue > 5050) {
             countLow = 0;
             countHigh++;
-            if (countHigh > 8) {
-                chance = (1 - (Math.pow(0.525, countHigh))) * 100;
+            if (countHigh > 25) {
+                flag = true;
+                type = 5050;
+                setBetOnChanceX2(startBet);
+                //chance = (1 - (Math.pow(0.525, countHigh))) * 100;
                 //System.out.printf("%3s %5d %10s %1d %4.10f%1s %4s\n", "Number = ", randomValue," SP Dise = ", countHigh, chance, "%",  "BettHigh" );
             }
-        }*/
-
-        if (randomValue > 5050) {
-            countHigh++;
-            if (countHigh > 10) {
-                System.out.println("yea!!!");
-            }
-        } else {
-            countHigh = 0;
         }
     }
 
-
-
-
-
-
-
-
-
-
-
-
+    private void setBetOnChanceX2(double startBet) {
+        if(betThenLoss >= 0) {
+            bet = bet * 30;
+            while (bet > balance) {
+                bet /= 2;
+                if (bet <= startBet) {
+                    bet = startBet;
+                }
+            }
+        } else {
+            bet = bet * 2;
+            while (bet > balance) {
+                bet /= 1.1;
+                if (bet <= startBet) {
+                    if (balance < startBet) {
+                        return;
+                    }
+                    bet = startBet;
+                }
+            }
+        }
+    }
 
 
     //Old Function
