@@ -63,7 +63,7 @@ public class MyRandom {
     private void combinedTactik() {
         balance = 1.0;
         int tick = 0;
-        bet = (balance / 1000000 ) * 2;
+        bet = (balance / 1000000 ) * 1;
         double startBet = bet;
         double percent;
         int curentRoll;
@@ -92,7 +92,7 @@ public class MyRandom {
                 balance = randomRoll(balance, percent, curentRoll);
             }
 
-            //cheakRoll(curentRoll, startBet);
+            cheakRoll(curentRoll, startBet);
 
             //Exit When balance more
             if(balance >= 4) {
@@ -195,7 +195,7 @@ public class MyRandom {
         if(randomValue < 4950) {
             countHigh = 0;
             countLow++;
-            if (countLow > 25) {
+            if (countLow > 14) {
                 flag = true;
                 type = 4950;
                 setBetOnChanceX2(startBet);
@@ -203,7 +203,7 @@ public class MyRandom {
         } if (randomValue > 5050) {
             countLow = 0;
             countHigh++;
-            if (countHigh > 25) {
+            if (countHigh > 14) {
                 flag = true;
                 type = 5050;
                 setBetOnChanceX2(startBet);
