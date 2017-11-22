@@ -9,6 +9,9 @@ public class MyRandom {
     private int countLow = 0;
     private int countHigh = 0;
 
+    private int CountLowx19 = 0;
+    private int CountHighx19 = 0;
+
     private double bet;
     private int rollWin;
     private int countJACKPOTS = 0;
@@ -28,7 +31,7 @@ public class MyRandom {
     }
 
     private void init() {
-        list.clear();
+        /*list.clear();
         for (int i = 0; i < 100; i++) {
 
             attempt = 0;
@@ -44,9 +47,21 @@ public class MyRandom {
             pro += (int) aList;
         }
         pro /= list.size();
-        System.out.println("Среднее число: " + pro);
+        System.out.println("Среднее число: " + pro);*/
         //combinedTactik();
         //day();
+
+
+
+        for (int i = 0; i < 1000000; i++) {
+            rollx5();
+        }
+    }
+
+    //temp
+    private void rollx5() {
+       int currentRoll = dise();
+        checkRollx19(currentRoll);
     }
 
     private void day() {
@@ -92,7 +107,7 @@ public class MyRandom {
                 balance = randomRoll(balance, percent, curentRoll);
             }
 
-            cheakRoll(curentRoll, startBet);
+            checkRoll(curentRoll, startBet);
 
             //Exit When balance more
             if(balance >= 4) {
@@ -187,7 +202,8 @@ public class MyRandom {
         return balance;
     }
 
-    private void cheakRoll(int randomValue, double startBet) {
+    //Check Roll on chance 49% to win
+    private void checkRoll(int randomValue, double startBet) {
         double chance;
         flag = false;
         type = 0;
@@ -236,6 +252,30 @@ public class MyRandom {
         }
     }
 
+    //Check Roll on chance 5% to win
+    private void checkRollx19(int randomValue) {
+        double chance;
+
+        if (randomValue > 9500) {
+            CountHighx19 = 0;
+
+            if(CountLowx19 > 180) {
+                chance = (1 - (Math.pow(0.95, CountLowx19))) * 100;
+                System.out.printf("%3s %5d %10s %1d %4.10f%1s %4s\n", "Number = ", randomValue," SP Dise = ", CountLowx19, chance, "%",  "BettHigh" );
+
+            }
+        } if (randomValue < 500) {
+            CountLowx19 = 0;
+
+            if (CountHighx19 > 180) {
+                chance = (1 - (Math.pow(0.95, CountHighx19))) * 100;
+                System.out.printf("%3s %5d %10s %1d %4.10f%1s %4s\n", "Number = ", randomValue," SP Dise = ", CountHighx19, chance, "%",  "BettHigh" );
+            }
+        } else {
+            CountLowx19++;
+            CountHighx19++;
+        }
+    }
 
     //Old Function
     private void rollOnMargingeil() {
