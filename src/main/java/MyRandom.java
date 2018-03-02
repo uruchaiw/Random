@@ -9,8 +9,11 @@ public class MyRandom {
     private int countLow = 0;
     private int countHigh = 0;
 
-    private int CountLowx19 = 0;
-    private int CountHighx19 = 0;
+    private int CountLowX19 = 0;
+    private int CountHighX19 = 0;
+
+    private int CountLowX5 = 0;
+    private int CountHighX5 = 0;
 
     private double bet;
     private int rollWin;
@@ -20,8 +23,10 @@ public class MyRandom {
     private double betThenLoss;
     double balance;
 
-    private boolean flag = false;
-    private int type;
+    private boolean flagX2 = false;
+    private boolean flagX19 = false;
+    private int typeX2;
+    private  int typeX19;
 
     private List<Number> list = new ArrayList();
 
@@ -31,38 +36,37 @@ public class MyRandom {
     }
 
     private void init() {
-        /*list.clear();
+        list.clear();
         for (int i = 0; i < 100; i++) {
-
             attempt = 0;
             while (attempt >= 0) {
                 attempt++;
-                //rollOnMargingeil();
                 combinedTactik();
             }
         }
-
         int pro = 0;
         for (Number aList : list) {
             pro += (int) aList;
         }
         pro /= list.size();
-        System.out.println("Среднее число: " + pro);*/
+        System.out.println("Среднее число попыток: " + pro);
         //combinedTactik();
         //day();
 
 
 
-        for (int i = 0; i < 1000000; i++) {
+        /*for (int i = 0; i < 1000000; i++) {
             rollx5();
-        }
+        }*/
     }
 
-    //temp
+    /**Temp*/
     private void rollx5() {
-       int currentRoll = dise();
-        checkRollx19(currentRoll);
+        int currentRoll = dise();
+        //checkRollx19(currentRoll);
+        checkRollX5(currentRoll);
     }
+    /**Close Temp*/
 
     private void day() {
         int day = 0;
@@ -94,20 +98,28 @@ public class MyRandom {
             percent = (Math.random() * (max - min) + min);
 
             //Up bet If lose
-            if (!flag) {
+            if (!flagX2 || !flagX19) {
                 upBetIfLose(balance, startBet, percent, currentBet);
             }
+            /*if (!flagX19) {
+
+            }*/
 
             //Set Random at "Low" or "High" on bet
             curentRoll = dise();
 
-            if (flag){
+            if (flagX2){
                 balance = rollX2(balance, curentRoll);
-            } else {
+            }
+            else if (flagX19) {
+                balance = rollX19(balance, curentRoll);
+            }else {
                 balance = randomRoll(balance, percent, curentRoll);
             }
 
             checkRoll(curentRoll, startBet);
+            checkRollx19(curentRoll, startBet);
+            //checkRollX5(curentRoll);
 
             //Exit When balance more
             if(balance >= 4) {
@@ -157,10 +169,10 @@ public class MyRandom {
     }
 
     //Random Swith on 85-89% to win
-    private double randomRoll(double balance, double percent, int curentRoll) {
+    private double randomRoll(double balance, double percent, int currentRoll) {
 
         if (Math.random() < 0.5) {
-            if(curentRoll < (10000 * (percent / 100))) {
+            if(currentRoll < (10000 * (percent / 100))) {
                 balance  += (bet / (percent / 100) - bet);
                 betThenLoss += (bet / (percent / 100) - bet);
             } else {
@@ -168,7 +180,7 @@ public class MyRandom {
                 betThenLoss -= bet;
             }
         } else {
-            if(curentRoll > (10000 - (10000 * (percent / 100)))) {
+            if(currentRoll > (10000 - (10000 * (percent / 100)))) {
                 balance  += (bet / (percent / 100) - bet);
                 betThenLoss += (bet / (percent / 100) - bet);
             } else {
@@ -179,10 +191,10 @@ public class MyRandom {
         return balance;
     }
 
-    private double rollX2(double balance, int curentRoll) {
+    private double rollX2(double balance, int currentRoll) {
 
-        if (type == 4950) {
-            if (curentRoll > 5051) {
+        if (typeX2 == 4950) {
+            if (currentRoll > 5051) {
                 balance += bet;
                 betThenLoss += bet;
             } else {
@@ -190,7 +202,7 @@ public class MyRandom {
                 betThenLoss -= bet;
             }
         } else {
-            if (curentRoll < 4949) {
+            if (currentRoll < 4949) {
                 balance += bet;
                 betThenLoss += bet;
             } else {
@@ -198,40 +210,60 @@ public class MyRandom {
                 betThenLoss -= bet;
             }
         }
+        return balance;
+    }
 
+    private double rollX19(double balance, int currentRoll) {
+
+        if(typeX19 == 9500) {
+            if (currentRoll > 9501) {
+                balance += bet * 19;
+                betThenLoss += bet;
+            } else {
+                balance -=  bet;
+                betThenLoss -= bet;
+            }
+        } else {
+            if (currentRoll < 501) {
+                balance += bet;
+                betThenLoss += bet * 19;
+            } else {
+                balance -=  bet;
+                betThenLoss -= bet;
+            }
+        }
         return balance;
     }
 
     //Check Roll on chance 49% to win
     private void checkRoll(int randomValue, double startBet) {
-        double chance;
-        flag = false;
-        type = 0;
+
+        flagX2 = false;
+        typeX2 = 0;
 
         if(randomValue < 4950) {
             countHigh = 0;
             countLow++;
             if (countLow > 14) {
-                flag = true;
-                type = 4950;
+                flagX2 = true;
+                typeX2 = 4950;
                 setBetOnChanceX2(startBet);
             }
-        } if (randomValue > 5050) {
+        }
+        else if (randomValue > 5050) {
             countLow = 0;
             countHigh++;
             if (countHigh > 14) {
-                flag = true;
-                type = 5050;
+                flagX2 = true;
+                typeX2 = 5050;
                 setBetOnChanceX2(startBet);
-                //chance = (1 - (Math.pow(0.525, countHigh))) * 100;
-                //System.out.printf("%3s %5d %10s %1d %4.10f%1s %4s\n", "Number = ", randomValue," SP Dise = ", countHigh, chance, "%",  "BettHigh" );
             }
         }
     }
 
     private void setBetOnChanceX2(double startBet) {
         if(betThenLoss >= 0) {
-            bet = bet * 30;
+            bet = bet * 1.5;
             while (bet > balance) {
                 bet /= 2;
                 if (bet <= startBet) {
@@ -239,7 +271,7 @@ public class MyRandom {
                 }
             }
         } else {
-            bet = bet * 2;
+            bet = bet * 5;
             while (bet > balance) {
                 bet /= 1.1;
                 if (bet <= startBet) {
@@ -253,60 +285,77 @@ public class MyRandom {
     }
 
     //Check Roll on chance 5% to win
-    private void checkRollx19(int randomValue) {
-        double chance;
+    private void checkRollx19(int randomValue, double startBet) {
+
+        flagX19 = false;
+        typeX19 = 0;
 
         if (randomValue > 9500) {
-            CountHighx19 = 0;
-
-            if(CountLowx19 > 180) {
-                chance = (1 - (Math.pow(0.95, CountLowx19))) * 100;
-                System.out.printf("%3s %5d %10s %1d %4.10f%1s %4s\n", "Number = ", randomValue," SP Dise = ", CountLowx19, chance, "%",  "BettHigh" );
-
-            }
+            CountHighX19 = 0;
         } if (randomValue < 500) {
-            CountLowx19 = 0;
+            CountLowX19 = 0;
+        } else {
+            CountLowX19++;
+            CountHighX19++;
 
-            if (CountHighx19 > 180) {
-                chance = (1 - (Math.pow(0.95, CountHighx19))) * 100;
-                System.out.printf("%3s %5d %10s %1d %4.10f%1s %4s\n", "Number = ", randomValue," SP Dise = ", CountHighx19, chance, "%",  "BettHigh" );
+            if(CountLowX19 > 270) {
+                flagX19 = true;
+                typeX19 = 500;
+                setBetOnChanceX19(startBet);
+            }
+            if (CountHighX19 > 270) {
+                flagX19 = true;
+                typeX19 = 9500;
+                setBetOnChanceX19(startBet);
+            }
+        }
+    }
+
+    private void setBetOnChanceX19(double startBet) {
+        if(betThenLoss >= 0) {
+            bet = bet * 9;
+            while (bet > balance) {
+                bet /= 2;
+                if (bet <= startBet) {
+                    bet = startBet;
+                }
             }
         } else {
-            CountLowx19++;
-            CountHighx19++;
-        }
-    }
-
-    //Old Function
-    private void rollOnMargingeil() {
-        balance = 750;
-        int tick = 0;
-        bet = 1;
-
-        while (balance >= bet) {
-            tick++;
-
-            if (dise() <= 4749) {
-                balance += bet;
-                bet = 1;
-            } else {
-                balance -= bet;
-                bet *= 2;
-            }
-            //System.out.println(tick + "\t" + balance);
-
-            if(balance >= 1000) {
-                System.out.println(attempt);
-                attempt = -1;
-                return;
+            bet = bet * 5;
+            while (bet > balance) {
+                bet /= 1.2;
+                if (bet <= startBet) {
+                    if (balance < startBet) {
+                        return;
+                    }
+                    bet = startBet;
+                }
             }
         }
     }
 
-    int fib(int i) {
-        if (i == 1) return 1;
-        if (i == 2) return 1;
-        return fib(i - 1) + fib(i - 2);
+    //Check Roll on chance 95% to win
+    private void checkRollX5(int randomValue) {
+        double chance;
+
+        if(randomValue > 9500) {
+            CountLowX5++;
+            if (CountLowX5 > 3) {
+                chance = (1 - (Math.pow(0.05, CountLowX5))) * 100;
+                System.out.printf("%3s %5d %10s %1d %4.10f%1s %4s\n", "Number = ", randomValue," SP Dise = ", CountLowX5, chance, "%",  "BettLow");
+            }
+
+        } else if (randomValue < 500) {
+            CountHighX5++;
+            if (CountHighX5 > 3) {
+                chance = (1 - (Math.pow(0.05, CountHighX5))) * 100;
+                System.out.printf("%3s %5d %10s %1d %4.10f%1s %4s\n", "Number = ", randomValue," SP Dise = ", CountHighX5, chance, "%",  "BettLow");
+            }
+        }
+        else {
+            CountHighX5 = 0;
+            CountLowX5 = 0;
+        }
     }
 
     private int getCountJACKPOTS(int countJACKPOTS, int randomValue) {
